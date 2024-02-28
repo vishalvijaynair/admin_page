@@ -1,0 +1,117 @@
+<!-- service-center-e.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Center D</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #4caf50; /* Green color */
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: lightcyan;
+    }
+
+    .verify-button, .reject-button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px; /* Added margin to separate buttons */
+    }
+
+    .reject-button {
+      background-color: #ff0000; /* Red color for reject button */
+    }
+
+    .button-container {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Service Center E</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Information</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Service Center Name</td>
+        <td>Service Center E</td>
+      </tr>
+      <tr>
+        <td>License Number</td>
+        <td>SCD101</td>
+      </tr>
+      <tr>
+        <td>Phone Number</td>
+        <td>9048514013</td>
+      </tr>
+      <tr>
+        <td>Manager Name</td>
+        <td>Shiwine</td>
+      </tr>
+      <tr>
+        <td>Location</td>
+        <td>Adoor</td>
+      </tr>
+      <tr>
+        <td>Services</td>
+        <td>Car detailing,Glasses,Washing</td>
+      </tr>
+      <!-- Add more rows as needed -->
+    </tbody>
+  </table>
+  <!-- Button container with space -->
+  <div class="button-container">
+    <!-- Verify button -->
+    <button class="verify-button" onclick="verify()">Accept</button>
+
+    <!-- Reject button -->
+    <button class="reject-button" onclick="reject()">Reject</button>
+  </div>
+
+  <script>
+    function verify() {
+      // Add verification logic here
+      alert('Service centre Accepted');
+    }
+
+    function reject() {
+      // Add rejection logic here
+      alert('Service centre Rejected');
+    }
+  </script>
+</body>
+</html>
