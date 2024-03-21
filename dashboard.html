@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   <!-- Other HTML code -->
-<script src="firebase-config.js"></script>
+
+ 
 <!-- Include other scripts that use Firebase after including firebase-config.js -->
 
   <style>
@@ -61,7 +62,7 @@
 
   <button class="requests-button" onclick="redirectToRequests()">Requests</button>
   <h2>Users Table</h2>
-  <table>
+  <table id="user-table">
     <thead>
       <tr>
         <th>Sl.No</th>
@@ -69,27 +70,50 @@
       </tr>
     </thead>
     <tbody>
-      <!-- Populate with actual user data -->
-      <tr>
-        <td>1</td>
-        <td>Vishal</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>Vyshnavu</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>Leo</td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>Sidharth</td>
-      </tr>
-      <!-- Add more rows as needed -->
+    
     </tbody>
   </table>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0stCkFLyNFJI20FmE0zaFzTP2KBPEY70",
+    authDomain: "fixflow-e3983.web.app",
+    projectId: "fixflow-e3983",
+    storageBucket: "gs://fixflow-e3983.appspot.com",
+    messagingSenderId: "354057994820",
+    appId: "1:354057994820:android:17ec58985318af2b54b211"
+    };
 
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
+    console.log("Firebase initialized");
+
+    // Retrieve data from Firestore
+    db.collection("Users").get().then((querySnapshot) => {
+  const tableBody = document.querySelector("#user-table tbody");
+  let slNo = 1;
+  querySnapshot.forEach((doc) => {
+    const name = doc.data().Name; // Retrieve only the "Name" field
+
+    // Ensure that the "Name" field exists and is not undefined
+    if (name) {
+      console.log("Name retrieved from Firestore:", name);
+
+      const row = tableBody.insertRow();
+      row.insertCell(0).textContent = slNo++;
+      row.insertCell(1).textContent = name; // Insert the retrieved name into the table
+    } else {
+      console.log("Name field not found or is undefined in Firestore document:", doc.id);
+    }
+  });
+    }).catch((error) => {
+      console.log("Error getting documents: ", error);
+    });
+  </script>
   <h2>Current Service Centres </h2>
   <table>
     <thead>
