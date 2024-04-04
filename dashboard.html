@@ -4,11 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-  <!-- Other HTML code -->
-
- 
-<!-- Include other scripts that use Firebase after including firebase-config.js -->
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -54,6 +49,18 @@
     .requests-button:hover {
       background-color: #45a049;
     }
+
+    /* Style for clickable user names */
+    .clickable {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Remove default underline on hover */
+    .clickable:hover {
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -70,51 +77,12 @@
       </tr>
     </thead>
     <tbody>
-    
+      <!-- This is where your existing user data will be populated -->
     </tbody>
   </table>
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-  <script>
-    // Firebase configuration and initialization
-    const firebaseConfig = {
-      apiKey: "AIzaSyB0stCkFLyNFJI20FmE0zaFzTP2KBPEY70",
-    authDomain: "fixflow-e3983.web.app",
-    projectId: "fixflow-e3983",
-    storageBucket: "gs://fixflow-e3983.appspot.com",
-    messagingSenderId: "354057994820",
-    appId: "1:354057994820:android:17ec58985318af2b54b211"
-    };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
-
-    console.log("Firebase initialized");
-
-    // Retrieve data from Firestore
-    db.collection("Users").get().then((querySnapshot) => {
-  const tableBody = document.querySelector("#user-table tbody");
-  let slNo = 1;
-  querySnapshot.forEach((doc) => {
-    const name = doc.data().Name; // Retrieve only the "Name" field
-
-    // Ensure that the "Name" field exists and is not undefined
-    if (name) {
-      console.log("Name retrieved from Firestore:", name);
-
-      const row = tableBody.insertRow();
-      row.insertCell(0).textContent = slNo++;
-      row.insertCell(1).textContent = name; // Insert the retrieved name into the table
-    } else {
-      console.log("Name field not found or is undefined in Firestore document:", doc.id);
-    }
-  });
-    }).catch((error) => {
-      console.log("Error getting documents: ", error);
-    });
-  </script>
-  <h2>Current Service Centres </h2>
+  
+  <!-- Existing Service Centers Table -->
+  <h2>Current Service Centres</h2>
   <table>
     <thead>
       <tr>
@@ -126,19 +94,71 @@
       <!-- Populate with actual service center data -->
       <tr>
         <td>1</td>
-        <td> Service Center 1</td>
+        <td>Service Center 1</td>
       </tr>
       <tr>
         <td>2</td>
-        <td> Service Center 2</td>
+        <td>Service Center 2</td>
       </tr>
       <tr>
         <td>3</td>
-        <td> Service Center 3</td>
+        <td>Service Center 3</td>
       </tr>
       <!-- Add more rows as needed -->
     </tbody>
+  </table>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
   <script>
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0stCkFLyNFJI20FmE0zaFzTP2KBPEY70",
+      authDomain: "fixflow-e3983.web.app",
+      projectId: "fixflow-e3983",
+      storageBucket: "gs://fixflow-e3983.appspot.com",
+      messagingSenderId: "354057994820",
+      appId: "1:354057994820:android:17ec58985318af2b54b211"
+      };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
+    console.log("Firebase initialized");
+
+    // Retrieve data from Firestore for Users Table
+    db.collection("Users").get().then((querySnapshot) => {
+      const tableBody = document.querySelector("#user-table tbody");
+      let slNo = 1;
+      querySnapshot.forEach((doc) => {
+        const name = doc.data().Name; // Retrieve only the "Name" field
+
+        // Ensure that the "Name" field exists and is not undefined
+        if (name) {
+          console.log("Name retrieved from Firestore:", name);
+
+          const row = tableBody.insertRow();
+          row.insertCell(0).textContent = slNo++;
+          const nameCell = row.insertCell(1);
+          nameCell.textContent = name; // Insert the retrieved name into the table
+          // Add event listener to each name to redirect to user details page
+          nameCell.classList.add('clickable');
+          nameCell.addEventListener('click', () => redirectToUserDetails(doc.id));
+        } else {
+          console.log("Name field not found or is undefined in Firestore document:", doc.id);
+        }
+      });
+    }).catch((error) => {
+      console.log("Error getting documents: ", error);
+    });
+
+    // Function to redirect to user details page with email as parameter
+    function redirectToUserDetails(email) {
+      window.location.href = 'user-details.html?email=' + encodeURIComponent(email);
+    }
+
+    // Function to redirect to requests page
     function redirectToRequests() {
       window.location.href = 'requests.html';
     }
