@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Center Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f2f2f2; /* Light gray background */
+      text-align: center; /* Center align content */
+    }
+
+    h1 {
+      color: #4caf50; /* Green color */
+    }
+
+    #service-center-details {
+      background-color: #fff; /* White background */
+      border: 1px solid #ddd; /* Gray border */
+      border-radius: 5px; /* Rounded corners */
+      padding: 20px; /* Padding inside the box */
+      margin: 20px auto; /* Center align and add margin */
+      max-width: 600px; /* Maximum width of the box */
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Box shadow */
+      font-size: 16px; /* Increase font size */
+      text-align: left; /* Align contents left */
+    }
+
+    #service-center-details p {
+      margin: 10px 0; /* Add margin to separate paragraphs */
+    }
+
+    /* Style for labels (e.g., Email, Name) */
+    .label {
+      color: #4caf50; /* Green color */
+      font-weight: bold; /* Bold text */
+    }
+
+    /* Style for details */
+    .details {
+      font-weight: normal; /* Non-bold text */
+    }
+
+    /* Style for buttons */
+    .button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .acceptButton {
+      background-color: #4caf50; /* Green */
+      color: white;
+    }
+
+    .acceptButton:hover {
+      background-color: #45a049; /* Darker green */
+    }
+
+    .rejectButton {
+      background-color: #f44336; /* Red */
+      color: white;
+    }
+
+    .rejectButton:hover {
+      background-color: #e53935; /* Darker red */
+    }
+  </style>
+</head>
+<body>
+  <h1>Service Center Details</h1>
+
+  <div id="service-center-details">
+    <!-- Service center details will be displayed here -->
+  </div>
+
+  <div id="action-buttons">
+    <button class="button acceptButton" id="acceptButton">Accept</button>
+    <button class="button rejectButton" id="rejectButton">Reject</button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0stCkFLyNFJI20FmE0zaFzTP2KBPEY70",
+      authDomain: "fixflow-e3983.web.app",
+      projectId: "fixflow-e3983",
+      storageBucket: "gs://fixflow-e3983.appspot.com",
+      messagingSenderId: "354057994820",
+      appId: "1:354057994820:android:17ec58985318af2b54b211"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
+    function getServiceCenterDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+
+      if (email) {
+        db.collection("Requested_Centres").doc(email).get().then((doc) => {
+          if (doc.exists) {
+            const serviceCenterDetails = doc.data();
+            let serviceCenterDetailsHTML = '';
+
+            for (const key in serviceCenterDetails) {
+              const label = (key === "location") ? "Location" : key.charAt(0).toUpperCase() + key.slice(1);
+              let value = serviceCenterDetails[key];
+
+              if (typeof value === 'object' && !Array.isArray(value)) {
+                value = JSON.stringify(value);
+              } else if (Array.isArray(value)) {
+                value = value.map(item => typeof item === 'string' ? item.replace(/["{}]/g, '') : item).join(', ');
+              }
+
+              serviceCenterDetailsHTML += `<p><span class="label">${label}:</span> <span class="details">${value}</span></p>`;
+            }
+
+            document.getElementById('service-center-details').innerHTML = serviceCenterDetailsHTML;
+          } else {
+            console.log("No such document!");
+            document.getElementById('service-center-details').innerHTML = "<p>No details found for this service center.</p>";
+          }
+        }).catch((error) => {
+          console.log("Error getting document:", error);
+          document.getElementById('service-center-details').innerHTML = "<p>Error fetching service center details.</p>";
+        });
+      } else {
+        console.log("No email parameter found in URL.");
+        document.getElementById('service-center-details').innerHTML = "<p>No email parameter found in URL.</p>";
+      }
+    }
+
+    function handleAccept() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+
+      if (email) {
+        db.collection("Requested_Centres").doc(email).get().then((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            db.collection("Service_Centres").doc(email).set(data)
+              .then(() => {
+                alert("Accepted successfully!"); // Show popup message
+                // Delete the document from current collection
+                db.collection("Requested_Centres").doc(email).delete().then(() => {
+                  console.log("Document successfully deleted from Requested_Centres");
+                  // Redirect to some page or do something else
+                }).catch((error) => {
+                  console.error("Error removing document: ", error);
+                });
+              })
+              .catch((error) => {
+                console.error("Error copying document: ", error);
+              });
+          } else {
+            console.log("No such document!");
+          }
+        }).catch((error) => {
+          console.log("Error getting document:", error);
+        });
+      }
+    }
+
+    function handleReject() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+
+      if (email) {
+        db.collection("Requested_Centres").doc(email).delete().then(() => {
+          alert("Rejected successfully!"); // Show popup message
+          console.log("Document successfully deleted from Requested_Centres");
+          // Redirect to some page or do something else
+        }).catch((error) => {
+          console.error("Error removing document: ", error);
+        });
+      }
+    }
+
+    document.getElementById("acceptButton").addEventListener("click", handleAccept);
+    document.getElementById("rejectButton").addEventListener("click", handleReject);
+
+    getServiceCenterDetails();
+  </script>
+</body>
+</html>

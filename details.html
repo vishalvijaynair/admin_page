@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Details</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: lightcyan;
+    }
+  </style>
+</head>
+<body>
+  <h1>User Details</h1>
+  <div id="details-container">
+    <table id="user-details-table">
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- User details will be inserted here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Function to retrieve URL parameters
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      const paramsObject = {};
+      for (const [key, value] of params) {
+        paramsObject[key] = value;
+      }
+      return paramsObject;
+    }
+
+    // Retrieve URL parameters
+    const userDetails = getUrlParams();
+
+    // Display user details in the table
+    const userDetailsTable = document.getElementById("user-details-table");
+    const userDetailsTbody = userDetailsTable.querySelector("tbody");
+    for (const key in userDetails) {
+      const row = document.createElement("tr");
+      const fieldCell = document.createElement("td");
+      fieldCell.textContent = key;
+      const valueCell = document.createElement("td");
+      valueCell.textContent = userDetails[key];
+      row.appendChild(fieldCell);
+      row.appendChild(valueCell);
+      userDetailsTbody.appendChild(row);
+    }
+  </script>
+</body>
+</html>

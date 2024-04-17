@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Center Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f2f2f2; /* Light gray background */
+      text-align: center; /* Center align content */
+    }
+
+    h1 {
+      color: #4caf50; /* Green color */
+    }
+
+    #service-center-details {
+      background-color: #fff; /* White background */
+      border: 1px solid #ddd; /* Gray border */
+      border-radius: 5px; /* Rounded corners */
+      padding: 20px; /* Padding inside the box */
+      margin: 20px auto; /* Center align and add margin */
+      max-width: 600px; /* Maximum width of the box */
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Box shadow */
+      font-size: 16px; /* Increase font size */
+      text-align: left; /* Align contents left */
+    }
+
+    #service-center-details p {
+      margin: 10px 0; /* Add margin to separate paragraphs */
+    }
+
+    /* Style for labels (e.g., Email, Name) */
+    .label {
+      color: #4caf50; /* Green color */
+      font-weight: bold; /* Bold text */
+    }
+
+    /* Style for details */
+    .details {
+      font-weight: normal; /* Non-bold text */
+    }
+  </style>
+</head>
+<body>
+  <h1>Service Center Details</h1>
+
+  <div id="service-center-details">
+    <!-- Service center details will be displayed here -->
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyB0stCkFLyNFJI20FmE0zaFzTP2KBPEY70",
+        authDomain: "fixflow-e3983.web.app",
+        projectId: "fixflow-e3983",
+        storageBucket: "gs://fixflow-e3983.appspot.com",
+        messagingSenderId: "354057994820",
+        appId: "1:354057994820:android:17ec58985318af2b54b211"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
+    // Function to get service center details based on the ID passed in the URL parameter
+    function getServiceCenterDetails() {
+  // Get email parameter from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const email = urlParams.get('email');
+
+  if (email) {
+    console.log("Service center Email:", email); // Print Email to console
+
+    // Retrieve service center details from Firestore based on the Email
+    db.collection("Service_Centres").doc(email).get().then((doc) => {
+      if (doc.exists) {
+        // Populate service center details onto the page
+        const serviceCenterDetails = doc.data();
+        let serviceCenterDetailsHTML = '';
+
+        // Iterate through the service center details and create HTML elements for each key-value pair
+        for (const key in serviceCenterDetails) {
+          // Check if the key is "location", change it to "Location"
+          const label = (key === "location") ? "Location" : key.charAt(0).toUpperCase() + key.slice(1);
+          let value = serviceCenterDetails[key];
+
+                 // Check if the value is an object or array, and format accordingly
+                 if (typeof value === 'object' && !Array.isArray(value)) {
+                // For nested objects, convert to string and display
+                value = JSON.stringify(value);
+              } else if (Array.isArray(value)) {
+                // For arrays, join elements into a string and remove curly braces and quotes
+                value = value.map(item => typeof item === 'string' ? item.replace(/["{}]/g, '') : item).join(', ');
+              }
+
+              serviceCenterDetailsHTML += `<p><span class="label">${label}:</span> <span class="details">${value}</span></p>`;
+            }
+
+        // Display the service center details on the page
+        document.getElementById('service-center-details').innerHTML = serviceCenterDetailsHTML;
+      } else {
+        console.log("No such document!");
+        document.getElementById('service-center-details').innerHTML = "<p>No details found for this service center.</p>"; // Display message if document does not exist
+      }
+    }).catch((error) => {
+      console.log("Error getting document:", error);
+      document.getElementById('service-center-details').innerHTML = "<p>Error fetching service center details.</p>"; // Display message if there's an error fetching the document
+    });
+  } else {
+    console.log("No email parameter found in URL.");
+    document.getElementById('service-center-details').innerHTML = "<p>No email parameter found in URL.</p>"; // Display message if no email parameter found in URL
+  }
+}
+
+// Call the function to get service center details when the page loads
+getServiceCenterDetails();
+  </script>
+</body>
+</html>

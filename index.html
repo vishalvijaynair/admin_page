@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <!-- Other HTML code -->
+<script src="firebase-config.js"></script>
+<!-- Include other scripts that use Firebase after including firebase-config.js -->
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #e0f7fa; /* Light blue background */
+    }
+
+    form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 12px; /* Rounded corners */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      background-color:rgb(147, 190, 207); /* White background */
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="adminLoginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required onkeypress="handleKeyPress(event)">
+
+    <button type="button" onclick="login()">Login</button>
+  </form>
+
+  <script>
+    function login() {
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('password').value;
+
+      // Perform authentication logic here
+      // For example, check if username and password match a predefined admin account
+      if (username === 'admin' && password === '123') {
+        window.location.href = 'dashboard.html'; // Redirect to the dashboard on success
+      } else {
+        alert('Invalid credentials. Please try again.');
+      }  
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        login();
+      }
+    }
+  </script>
+
+</body>
+</html>

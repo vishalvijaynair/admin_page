@@ -1,16 +1,10 @@
-<!-- requests.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Requests</title>
-  <!-- Other HTML code -->
-<script src="firebase-config.js">
-</script>
-<!-- Include other scripts that use Firebase after including firebase-config.js -->
-
-<style>
+  <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -39,9 +33,43 @@
     th {
       background-color: lightcyan;
     }
-    </style>
-  <h2>Requested Service Centres </h2>
-  <table>
+
+    .dashboard-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .dashboard-button:hover {
+      background-color: #45a049;
+    }
+
+    /* Style for clickable service center names */
+    .clickable {
+      color: blue;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Remove default underline on hover */
+    .clickable:hover {
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Requests</h1>
+
+  <button class="dashboard-button" onclick="redirectToDashboard()">Dashboard</button>
+  <h2>Requested Service Centres</h2>
+  <table id="service-centers-table">
     <thead>
       <tr>
         <th>Sl.No</th>
@@ -49,48 +77,64 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>
-          <a href="service-center-a.html">Service Center A</a>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>
-          <a href="service-center-b.html">Service Center B</a>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>
-        <a href="service-center-c.html">Service Center C</a>
-        </td>
-      </tr>
-      <!-- Add more rows as needed -->
+      <!-- This is where requested service centers will be populated -->
     </tbody>
   </table>
-  <h2>Requested Users </h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Sl.No</th>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>
-          Rahul
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>
-          Jais
-        </td>
-      </tr>
-      <!-- Add more rows as needed -->
-    </tbody>
-  </table>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0stCkFLyNFJI20FmE0zaFzTP2KBPEY70",
+      authDomain: "fixflow-e3983.web.app",
+      projectId: "fixflow-e3983",
+      storageBucket: "gs://fixflow-e3983.appspot.com",
+      messagingSenderId: "354057994820",
+      appId: "1:354057994820:android:17ec58985318af2b54b211"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
+    console.log("Firebase initialized");
+
+    // Retrieve data from Firestore for Requested Service Centers Table
+    db.collection("Requested_Centres").get().then((querySnapshot) => {
+      const serviceCentersTableBody = document.querySelector("#service-centers-table tbody");
+      let slNo = 1;
+      querySnapshot.forEach((doc) => {
+        const email = doc.id; // Retrieve the email associated with the requested service center
+        const serviceName = doc.data()["Service Center Name"]; // Retrieve the "Service Center Name" field
+
+        // Ensure that both the email and the "Service Center Name" field exist and are not undefined
+        if (email && serviceName) {
+          console.log("Email retrieved from Firestore:", email);
+          console.log("Service Center Name retrieved from Firestore:", serviceName);
+
+          const row = serviceCentersTableBody.insertRow();
+          row.insertCell(0).textContent = slNo++;
+          const nameCell = row.insertCell(1);
+          nameCell.textContent = serviceName; // Insert the retrieved service center name into the table
+          nameCell.classList.add('clickable'); // Add clickable class
+          nameCell.addEventListener('click', () => redirectToRequestDetails(email)); // Pass email as parameter
+        } else {
+          console.log("Email or Service Center Name field not found or is undefined in Firestore document:", doc.id);
+        }
+      });
+    }).catch((error) => {
+      console.log("Error getting documents: ", error);
+    });
+
+    // Function to redirect to dashboard page
+    function redirectToDashboard() {
+      window.location.href = 'dashboard.html';
+    }
+
+    // Function to redirect to request details page with email as parameter
+    function redirectToRequestDetails(email) {
+      window.location.href = 'request-details.html?email=' + encodeURIComponent(email);
+    }
+  </script>
+</body>
+</html>
